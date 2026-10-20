@@ -1,14 +1,14 @@
-[⬇ 下载最新版 Windows x64（ZIP，2026-10-20 道路闭环修复版）](https://github.com/GAN1112233131/NekoSportsWorldTool/releases/download/windows-road-loop-2026-10-20/NekoSportsWorldTool-Windows-x64-road-loop.zip)
+[⬇ 下载最新版 Windows x64（ZIP，2026-10-20 配速与提交保护修复版）](https://github.com/GAN1112233131/NekoSportsWorldTool/releases/download/windows-pace-fix-2026-10-20/NekoSportsWorldTool-Windows-x64-pace-fix.zip)
 
-版本 **0.3.0**，包含图形界面和命令行，无需安装编译工具。解压后先关闭旧程序，将 `NekoSportsWorldTool-Windows-x64-road-loop.exe` 放入原工具目录运行，保留原有配置、登录信息和地图。安装或更新本修复版请使用上面的下载链接。
+版本 **0.3.0**，包含图形界面和命令行，无需安装编译工具。首次使用可解压运行 `Windows配速修正版/NekoSportsWorldTool-Windows-x64-pace-fix.exe`。更新已有工具时先关闭旧程序，只将新版 EXE 复制到原工具目录，保留原配置、登录信息、地图和 `submission_receipts/`，不要用包内空配置覆盖原配置。
 
-本版修复道路刷新、围栏解析与登录失效处理；预览和正式道路生成均支持学校未返回围栏的情况，额外里程沿同一道路闭环重复。已有有效围栏仍会校验；无围栏时无法保证路线全程在校内。
+本版包含[每公里配速单位修正](docs/pace-unit-fix.md)、[违规状态、关联记录与重复提交保护](docs/violation-checks.md)，继承道路刷新、围栏解析与登录失效修复。额外里程沿同一道路闭环重复；已有有效围栏仍会校验，无围栏时无法保证路线全程在校内。旧服务器记录不会自动更新。
 
-已通过 GUI 178 项、无 GUI 122 项、Windows 本机 163 项测试及窗口启动检查；手动地图和自动获取均完成真实点位的只读预览验证，未提交真实成绩或上传轨迹。
+已通过 GUI 197 项、无 GUI 136 项、Windows 本机 182 项测试、编译及窗口启动检查。未提交真实成绩或上传轨迹，官方 App 最终显示和 Android 尚未实测。
 
-[使用说明](downloads/README.md) · [完整验证报告](docs/bugfix-69856c91/route-refresh-verification.md) · [SHA-256 校验值](downloads/SHA256SUMS.txt)
+[使用说明](downloads/README.md) · [验证报告](docs/integration-verification.md) · [SHA-256 校验值](downloads/SHA256SUMS-pace-fix.txt) · [Release 说明](https://github.com/GAN1112233131/NekoSportsWorldTool/releases/tag/windows-pace-fix-2026-10-20)
 
-当前源码另增加了[违规状态、关联记录与重复提交保护](docs/violation-checks.md)，并修正[每公里配速单位](docs/pace-unit-fix.md)，尚未发布到上述 Windows 下载包。[本批源码验证报告](docs/integration-verification.md)。
+仅提供 ZIP 下载。仓库 `downloads/` 内旧道路闭环 ZIP 是历史包，最新版请使用最上面的 Release 链接。
 
 ---
 
