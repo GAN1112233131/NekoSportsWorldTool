@@ -1,4 +1,4 @@
-[⬇ 下载最新版 Windows x64（ZIP，2026-10-20 道路闭环修复版）](https://github.com/GAN1112233131/NekoSportsWorldTool/raw/refs/heads/main/downloads/NekoSportsWorldTool-Windows-x64-road-loop.zip)
+[⬇ 下载最新版 Windows x64（ZIP，2026-10-20 道路闭环修复版）](https://github.com/GAN1112233131/NekoSportsWorldTool/releases/download/windows-road-loop-2026-10-20/NekoSportsWorldTool-Windows-x64-road-loop.zip)
 
 版本 **0.3.0**，包含图形界面和命令行，无需安装编译工具。解压后先关闭旧程序，将 `NekoSportsWorldTool-Windows-x64-road-loop.exe` 放入原工具目录运行，保留原有配置、登录信息和地图。安装或更新本修复版请使用上面的下载链接。
 
