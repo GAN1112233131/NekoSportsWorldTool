@@ -20,6 +20,8 @@ impl App {
         self.records_page.detail_loading = false;
         self.records_page.ai_detail_loading = false;
         self.data_page.cheat = None;
+        self.data_page.cheat_checking = false;
+        self.data_page.cheat_error = Some("登录已失效，请重新登录后检查".into());
         self.data_page.semester = None;
         self.user_page.info = None;
         self.session = None;
@@ -59,6 +61,8 @@ impl App {
                 CHEAT => {
                     self.data_busy = false;
                     self.data_page.cheat = None;
+                    self.data_page.cheat_checking = false;
+                    self.data_page.cheat_error = Some(error.into());
                 }
                 SEMESTER => {
                     self.data_busy = false;
@@ -147,7 +151,12 @@ impl App {
                 ai_records_json = Some(v.to_string());
             } else if let Some(v) = msg.strip_prefix(RUN_DETAIL) {
                 if let Ok(raw) = serde_json::from_str::<serde_json::Value>(v) {
-                    detail_raw = Some(raw);
+                    // Filter before coalescing messages: a late reply must not
+                    // discard the current record's reply in the same frame.
+                    if raw.get("rrid").and_then(|v| v.as_i64()) == self.records_page.detail_rrid
+                        && self.records_page.detail_rrid.is_some() {
+                        detail_raw = Some(raw);
+                    }
                 }
             } else if let Some(v) = msg.strip_prefix(AI_DETAIL) {
                 if let Ok(raw) = serde_json::from_str::<serde_json::Value>(v) {
@@ -393,15 +402,16 @@ impl App {
             }
         }
         if let Some(v) = cheat_json {
-            if let Ok(val) = serde_json::from_str::<serde_json::Value>(&v) {
-                self.data_page.cheat = Some(crate::api::cheat::CheatReport {
-                    self_info: val.get("self").cloned().unwrap_or(serde_json::Value::Null),
-                    list: val
-                        .get("list")
-                        .and_then(|l| l.as_array())
-                        .cloned()
-                        .unwrap_or_default(),
-                });
+            self.data_page.cheat_checking = false;
+            match serde_json::from_str::<crate::api::cheat::CheatReport>(&v) {
+                Ok(report) => {
+                    self.data_page.cheat = Some(report);
+                    self.data_page.cheat_error = None;
+                }
+                Err(_) => {
+                    self.data_page.cheat = None;
+                    self.data_page.cheat_error = Some("违规数据解析失败，无法判断".into());
+                }
             }
         }
         if let Some(v) = rank_json {

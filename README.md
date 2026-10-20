@@ -8,6 +8,8 @@
 
 [使用说明](downloads/README.md) · [完整验证报告](docs/bugfix-69856c91/route-refresh-verification.md) · [SHA-256 校验值](downloads/SHA256SUMS.txt)
 
+当前源码另增加了[违规状态、关联记录与重复提交保护](docs/violation-checks.md)，并修正[每公里配速单位](docs/pace-unit-fix.md)，尚未发布到上述 Windows 下载包。[本批源码验证报告](docs/integration-verification.md)。
+
 ---
 
 <h1 style="font-size: 48px;">别倒卖了😭</h1>

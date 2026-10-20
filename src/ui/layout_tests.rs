@@ -3,6 +3,8 @@ use egui::{Event, PointerButton, Pos2, Rect, Vec2};
 
 #[path = "route_refresh_tests.rs"]
 mod route_refresh_tests;
+#[path = "violation_tests.rs"]
+mod violation_tests;
 
 fn frame(
     app: &mut App,
@@ -104,6 +106,7 @@ fn short_phone_data_page_can_scroll_and_operate_controls() {
             list: (0..20)
                 .map(|i| serde_json::json!({"name":format!("row-{i}"),"reason":"fixture"}))
                 .collect(),
+            ..Default::default()
         });
         app.data_page.rank_rows = (0..30)
             .map(|i| crate::api::rank::RankRow {
@@ -678,6 +681,7 @@ fn failed_queries_are_not_empty_success_or_a_clean_cheat_result() {
     app.data_page.cheat = Some(crate::api::cheat::CheatReport {
         self_info: serde_json::Value::Null,
         list: vec![],
+        ..Default::default()
     });
     for prefix in [RECORDS, AI_LIST, AI_RECORDS, CHEAT, SEMESTER, RANK] {
         app.tx

@@ -113,6 +113,8 @@ pub fn run_full_flow_cancellable(
     }
     let sess: Session = client.login.clone().ok_or("未登录")?;
 
+    super::submission_guard::preflight(client, params.start_ms, params.dur, log)?;
+
     // ① policy
     log("[policy] 拉取跑步策略…");
     let pol = fetch_policy(client)?;
@@ -349,6 +351,16 @@ pub fn run_records(
 ) -> Result<Vec<super::records::RecordRow>, String> {
     log("[records] 拉取跑步记录…");
     let rows = super::records::fetch_records(client)?;
+    if let Some(session) = &client.login {
+        let reconciliation = (|| {
+            let mut guard = super::submission_guard::Guard::open(session.uid, session.unid.parse().map_err(|_| "学校编号无效")?)?;
+            let found = guard.reconcile(&rows)?;
+            for id in found { log(&format!("[record] 已核对先前提交的记录 #{id}；未重复提交")); }
+            if guard.has_pending() { log("[record] 上次提交结果仍未知；本次列表未找到匹配记录，重复提交保护继续生效"); }
+            Ok::<_, String>(())
+        })();
+        if let Err(error) = reconciliation { log(&format!("[record] 提交保护核对未完成：{error}")); }
+    }
     log(&format!("√ [records] {} 条记录", rows.len()));
     Ok(rows)
 }

@@ -315,11 +315,8 @@ impl App {
                     ));
                 }
                 if let Some(c) = &self.data_page.cheat {
-                    if c.is_clean() {
-                        ui.colored_label(theme::ok(), "自查正常");
-                    } else {
-                        ui.colored_label(theme::err(), format!("已标记：{}", c.self_brief()));
-                    }
+                    ctx.request_repaint_after(std::time::Duration::from_secs(1));
+                    ui.label(c.label());
                 }
                 ui.separator();
                 ui.label(&self.status);
@@ -538,6 +535,9 @@ impl App {
     }
 
     fn renew_session_jobs(&mut self) {
+        self.data_page.cheat = None;
+        self.data_page.cheat_error = None;
+        self.data_page.cheat_checking = false;
         self.session_epoch = self.session_epoch.wrapping_add(1);
         self.auth_guard = Arc::new(std::sync::atomic::AtomicBool::new(false));
     }

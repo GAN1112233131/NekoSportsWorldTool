@@ -895,6 +895,7 @@ impl App {
     }
 
     fn start_run(&mut self) {
+        if self.run_busy { return; }
         if self.run_page.route_mode == RouteMode::Road && self.network.is_none() {
             self.status = "请先加载路网并刷新路线点位".into();
             return;

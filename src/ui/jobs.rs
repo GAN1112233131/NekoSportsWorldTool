@@ -478,15 +478,21 @@ impl App {
         };
         let identity = self.identity.clone();
         self.records_page.detail_loading = true;
+        #[cfg(test)]
+        let detail_test_host = self.route_fixture.as_ref().map(|(host, _)| host.clone());
         self.spawn_session_job(move |tx| {
             let mut client = tx.client(identity, Some(session));
+            #[cfg(test)]
+            if let Some(host) = detail_test_host {
+                client.set_test_host(host);
+            }
             match crate::api::records::fetch_detail(&mut client, rrid) {
                 Ok(d) => {
                     let payload = serde_json::to_string(&d).unwrap_or_default();
                     tx.send(format!("{RUN_DETAIL}{payload}")).ok();
                 }
                 Err(e) => {
-                    let payload = serde_json::json!({ "statusInfo": format!("详情拉取失败：{e}") });
+                    let payload = serde_json::json!({ "rrid": rrid, "statusInfo": format!("详情拉取失败：{e}") });
                     tx.send(format!("{RUN_DETAIL}{payload}")).ok();
                 }
             }
@@ -570,10 +576,14 @@ impl App {
 
     /// 学期 + 违规自查（登录 / 跑步提交成功后自动调用）。
     pub fn refresh_data_page(&mut self) {
+        if self.data_page.cheat_checking { return; }
         let Some(session) = self.session.clone() else {
             self.status = "请先登录".into();
             return;
         };
+        self.data_page.cheat_checking = true;
+        self.data_page.cheat_error = None;
+        self.data_page.cheat = None;
         let identity = self.identity.clone();
         self.data_busy = true;
         self.spawn_session_job(move |tx| {
@@ -606,7 +616,7 @@ impl App {
             }
             match crate::api::cheat::query(&mut client, 1, &mut log) {
                 Ok(r) => {
-                    let payload = serde_json::json!({ "self": r.self_info, "list": r.list });
+                    let payload = serde_json::to_value(&r).expect("CheatReport is serializable");
                     tx.send(format!("{CHEAT}{}", payload)).ok();
                 }
                 Err(e) => {
@@ -619,10 +629,14 @@ impl App {
     }
 
     pub fn refresh_cheat_only(&mut self) {
+        if self.data_page.cheat_checking { return; }
         let Some(session) = self.session.clone() else {
             self.status = "请先登录".into();
             return;
         };
+        self.data_page.cheat_checking = true;
+        self.data_page.cheat_error = None;
+        self.data_page.cheat = None;
         let identity = self.identity.clone();
         self.data_busy = true;
         self.spawn_session_job(move |tx| {
@@ -630,7 +644,7 @@ impl App {
             let mut client = tx.client(identity, Some(session));
             match crate::api::cheat::query(&mut client, 1, &mut log) {
                 Ok(r) => {
-                    let payload = serde_json::json!({ "self": r.self_info, "list": r.list });
+                    let payload = serde_json::to_value(&r).expect("CheatReport is serializable");
                     tx.send(format!("{CHEAT}{}", payload)).ok();
                 }
                 Err(e) => {

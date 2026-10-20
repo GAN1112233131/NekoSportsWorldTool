@@ -11,6 +11,8 @@ use eframe::egui;
 pub struct DataPage {
     pub semester: Option<SemesterSummary>,
     pub cheat: Option<CheatReport>,
+    pub cheat_error: Option<String>,
+    pub cheat_checking: bool,
     pub rank_rows: Vec<RankRow>,
     /// 0=个人日 1=个人月 2=班级日 3=班级月 4=院系日 5=院系月 6=室内日 7=室内周 8=室内月 9=历史日 10=历史月
     pub rank_sel: usize,
@@ -96,27 +98,33 @@ impl App {
                 });
             });
 
+        let mut open_record = None;
         // ── 违规自查 ────────────────────────────────────────────
         egui::CollapsingHeader::new("违规自查")
             .default_open(true)
             .show(ui, |ui| {
                 mobile::row(ui, |ui| {
+                    if self.data_page.cheat_checking {
+                        ui.label("违规检查中…");
+                    } else if let Some(error) = &self.data_page.cheat_error {
+                        ui.colored_label(theme::err(), format!("检查失败：{error}"));
+                    }
                     match &self.data_page.cheat {
                         Some(c) => {
-                            if c.is_clean() {
-                                ui.colored_label(theme::ok(), "自查：正常（self=null）");
-                            } else {
-                                ui.colored_label(
-                                    theme::err(),
-                                    format!("已被标记：{}", c.self_brief()),
-                                );
-                            }
+                            let color = match c.status() {
+                                crate::api::cheat::Status::NoRecord => theme::ok(),
+                                crate::api::cheat::Status::Flagged => theme::err(),
+                                _ => theme::warn(),
+                            };
+                            ui.colored_label(color, c.label());
                             ui.separator();
-                            ui.label(format!("全校违规：{} 条", c.list.len()));
+                            ui.label(format!("本页通报：{} 条（非全校总数）", c.list.len()));
                             ui.toggle_value(&mut self.data_page.show_cheat_list, "查看列表");
                         }
                         None => {
-                            ui.label("未检查");
+                            if !self.data_page.cheat_checking && self.data_page.cheat_error.is_none() {
+                                ui.label("未检查");
+                            }
                         }
                     }
                     if ui
@@ -126,6 +134,24 @@ impl App {
                         self.refresh_cheat_only();
                     }
                 });
+                if let Some(c) = &self.data_page.cheat {
+                    ui.ctx().request_repaint_after(std::time::Duration::from_secs(1));
+                    if c.checked_at_ms > 0 {
+                        ui.label(format!("检查时间：{}", crate::track::geom::fmt_cst(c.checked_at_ms, "%Y-%m-%d %H:%M:%S 北京时间")));
+                    }
+                    ui.label("这是查询时的服务端状态，不代表后续记录一定有效。");
+                    if c.self_info.as_object().is_some_and(|o| !o.is_empty()) {
+                        ui.label(format!("服务端原因：{}", c.reason()));
+                        ui.label(format!("发生时间：{}", c.occurred_at()));
+                        if let Some(rrid) = c.record_id() {
+                            if ui.add_enabled(self.session.is_some(), egui::Button::new(format!("查看关联跑步记录 #{rrid}"))).clicked() {
+                                open_record = Some(rrid);
+                            }
+                        } else {
+                            ui.label("服务端未提供关联跑步记录");
+                        }
+                    }
+                }
                 if self.data_page.show_cheat_list {
                     if let Some(c) = &self.data_page.cheat {
                         mobile::list_area(ui, "cheat_list", 160.0, |ui| {
@@ -178,6 +204,13 @@ impl App {
                 }
             });
 
+        if let Some(rrid) = open_record {
+            self.tab = 2;
+            self.records_page.sub = 0;
+            self.records_page.detail_rrid = Some(rrid);
+            self.records_page.detail_raw = None;
+            self.fetch_run_detail(rrid);
+        }
         // ── 排行榜 ──────────────────────────────────────────────
         egui::CollapsingHeader::new("排行榜")
             .default_open(true)

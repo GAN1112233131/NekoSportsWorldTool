@@ -73,7 +73,7 @@ impl ApiClient {
         self.test_host = Some(host);
     }
 
-    fn handle_request_error(&mut self, error: ureq::Error) -> String {
+    pub(crate) fn handle_request_error(&mut self, error: ureq::Error) -> String {
         let authenticated = self.login.as_ref().is_some_and(Session::is_logged_in);
         let error = request_error(error, authenticated);
         if is_session_expired(&error) {
@@ -87,6 +87,22 @@ impl ApiClient {
             }
         }
         error
+    }
+
+    pub(crate) fn ensure_session_valid(&self) -> Result<(), String> {
+        if self.login.as_ref().is_some_and(Session::is_logged_in)
+            && (self.auth_rejected || self.auth_context.as_ref().is_some_and(|c| c.rejected.load(std::sync::atomic::Ordering::SeqCst))) {
+            return Err(SESSION_EXPIRED.into());
+        }
+        Ok(())
+    }
+
+    pub(crate) fn record_url(&self) -> String {
+        #[cfg(test)]
+        if let Some(host) = &self.test_host {
+            return format!("{}{}", host.trim_end_matches('/'), super::submit::RECORD_PATH);
+        }
+        format!("{}{}", super::model::HOST, super::submit::RECORD_PATH)
     }
 
     fn uid(&self) -> i64 {
@@ -107,10 +123,7 @@ impl ApiClient {
         ua: &str,
         extra_headers: &[(String, String)],
     ) -> Result<RequestOutcome, String> {
-        if self.login.as_ref().is_some_and(Session::is_logged_in)
-            && (self.auth_rejected || self.auth_context.as_ref().is_some_and(|c| c.rejected.load(std::sync::atomic::Ordering::SeqCst))) {
-            return Err(SESSION_EXPIRED.into());
-        }
+        self.ensure_session_valid()?;
         let uid = self.uid();
         let token = self.token();
         let (header_plain, _) = build_header_for(&self.identity, uid, &token, None);
