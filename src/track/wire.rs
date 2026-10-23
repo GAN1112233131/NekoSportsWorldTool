@@ -135,7 +135,12 @@ pub fn five_point_wrapper(points: &[Value], track: &Track, area: &RunAreaMeta) -
 }
 
 /// 校验提交用五点轨迹仍是同一次点位请求产生的有效数据。
+#[cfg(test)]
 pub fn validate_five_point_wrapper(wrapper: &str) -> Result<(), String> {
+    validate_five_point_wrapper_for(wrapper, false)
+}
+
+pub fn validate_five_point_wrapper_for(wrapper: &str, allow_empty: bool) -> Result<(), String> {
     let outer: Value =
         serde_json::from_str(wrapper).map_err(|e| format!("五点轨迹 JSON 无效: {e}"))?;
     let raw = outer
@@ -144,7 +149,7 @@ pub fn validate_five_point_wrapper(wrapper: &str) -> Result<(), String> {
         .ok_or("五点轨迹缺少 fivePointJson")?;
     let points: Vec<Value> =
         serde_json::from_str(raw).map_err(|e| format!("五点轨迹数组无效: {e}"))?;
-    if points.is_empty() {
+    if points.is_empty() && !allow_empty {
         return Err("五点轨迹不能为空".into());
     }
     for point in points {

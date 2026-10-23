@@ -63,6 +63,8 @@ fn days_ago_label(days_ago: i64) -> String {
 
 #[derive(Clone, serde::Serialize, serde::Deserialize)]
 pub struct PreviewInputs {
+    #[serde(default)]
+    pub boundary_label: String,
     pub uid: i64,
     pub unid: String,
     pub anchor: crate::location::Coordinate,
@@ -607,6 +609,7 @@ impl App {
         if self.run_page.base_map_request.take().is_some() {
             self.run_page.map_fitted = false;
         }
+        ui.label(&inputs.boundary_label);
         self.prepare_preview(ui, net.clone(), &inputs, &plan);
 
         if inputs.fences.is_empty() {
@@ -726,11 +729,7 @@ impl App {
                     .draw_polygon(&painter, canvas, b, bld, 1.0);
             }
             let fence_c = egui::Color32::from_rgb(180, 118, 0);
-            for f in &p.fences {
-                self.run_page
-                    .map
-                    .draw_polygon(&painter, canvas, f, fence_c, 2.0);
-            }
+            self.run_page.map.draw_boundary(&painter,canvas,&p.fences,fence_c,2.0);
             let route_c = egui::Color32::from_rgb(30, 111, 216);
             self.run_page
                 .map
@@ -818,15 +817,7 @@ impl App {
         }
 
         if self.run_page.preview.is_none() {
-            for f in &inputs.fences {
-                self.run_page.map.draw_polygon(
-                    &painter,
-                    canvas,
-                    f,
-                    egui::Color32::from_rgb(180, 118, 0),
-                    2.0,
-                );
-            }
+            self.run_page.map.draw_boundary(&painter,canvas,&inputs.fences,egui::Color32::from_rgb(180,118,0),2.0);
             for &(lat, lon) in &inputs.points {
                 self.run_page
                     .map

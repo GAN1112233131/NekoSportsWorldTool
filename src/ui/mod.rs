@@ -21,6 +21,7 @@ pub mod osm;
 mod preview_jobs;
 pub mod records;
 mod road_tools;
+mod campus_lookup;
 pub mod run;
 pub mod theme;
 pub mod user;
@@ -490,20 +491,13 @@ impl App {
         crate::android::request_device_info(true);
         // AI 项目列表先上缓存，网络刷新后覆盖
         app.ai_page.list = crate::api::model::load_ai_sports().unwrap_or_default();
-        if app.session.is_some() {
+        if app.session.is_some() && app.config.offline_preview.is_none() {
             app.refresh_data_page();
             app.refresh_records();
             app.refresh_user_page();
             app.refresh_ai_list();
-            if app.config.osm_path.is_empty() {
-                app.refresh_points();
-            }
         }
-        // 已配置 OSM 路网则启动时后台加载
-        if !app.config.osm_path.is_empty() {
-            let path = app.config.osm_path.clone();
-            app.load_osm_async(path);
-        }
+        app.restore_route_on_startup();
         app
     }
 

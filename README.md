@@ -1,14 +1,14 @@
-[⬇ 下载最新版 Windows x64（ZIP，2026-10-20 配速与提交保护修复版）](https://github.com/GAN1112233131/NekoSportsWorldTool/releases/download/windows-pace-fix-2026-10-20/NekoSportsWorldTool-Windows-x64-pace-fix.zip)
+[⬇ 下载最新版 Windows x64（ZIP，2026-10-23 校园地图合并版）](https://github.com/GAN1112233131/NekoSportsWorldTool/releases/download/windows-campus-map-2026-10-23/NekoSportsWorldTool-Windows-x64-campus-map.zip)
 
-版本 **0.3.0**，包含图形界面和命令行，无需安装编译工具。首次使用可解压运行 `Windows配速修正版/NekoSportsWorldTool-Windows-x64-pace-fix.exe`。更新已有工具时先关闭旧程序，只将新版 EXE 复制到原工具目录，保留原配置、登录信息、地图和 `submission_receipts/`，不要用包内空配置覆盖原配置。
+版本 **0.3.0**，含 GUI 与 CLI。解压运行 `NekoSportsWorldTool.exe`。更新时先关闭旧程序，只替换 EXE，保留原配置、登录信息、地图缓存和 `submission_receipts/`。压缩包不附带账号配置，不覆盖原有设置。
 
-本版包含[每公里配速单位修正](docs/pace-unit-fix.md)、[违规状态、关联记录与重复提交保护](docs/violation-checks.md)，继承道路刷新、围栏解析与登录失效修复。额外里程沿同一道路闭环重复；已有有效围栏仍会校验，无围栏时无法保证路线全程在校内。旧服务器记录不会自动更新。
+本版合入学校点位兼容、校园地图边界查询、鼎湖校区预览与重启恢复修复。道路主服务失败后自动尝试 OSM 官方备用地图接口，保留 HTTPS 证书校验；校园边界需核对确认。无有效边界时显示“校园范围未校验”，不能保证路线始终在校内。继承配速单位修正和重复提交保护。
 
-已通过 GUI 197 项、无 GUI 136 项、Windows 本机 182 项测试、编译及窗口启动检查。未提交真实成绩或上传轨迹，官方 App 最终显示和 Android 尚未实测。
+合并后通过 GUI 工作区 237 项、无 GUI 工作区 160 项、Windows 原生 217 项测试，另通过离线预览重启恢复验收。未测试真实成绩提交、OBS 上传或 Android 构建，详细验证范围见报告。
 
-[使用说明](downloads/README.md) · [验证报告](docs/integration-verification.md) · [SHA-256 校验值](downloads/SHA256SUMS-pace-fix.txt) · [Release 说明](https://github.com/GAN1112233131/NekoSportsWorldTool/releases/tag/windows-pace-fix-2026-10-20)
+[更新说明与测试报告](docs/campus-map-integration-2026-10-23.md) · [SHA-256](downloads/SHA256SUMS-campus-map.txt) · [Release](https://github.com/GAN1112233131/NekoSportsWorldTool/releases/tag/windows-campus-map-2026-10-23)
 
-仅提供 ZIP 下载。仓库 `downloads/` 内旧道路闭环 ZIP 是历史包，最新版请使用最上面的 Release 链接。
+仅提供 ZIP 下载；仓库内旧下载包为历史版本。
 
 ---
 

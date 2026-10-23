@@ -43,8 +43,25 @@ impl Session {
 }
 
 /// UI 参数（config.json）。
+/// Local preview selection only; never used as submission metadata.
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct OfflinePreviewSelection {
+    pub key: String,
+    pub school: String,
+    pub anchor_lat: f64,
+    pub anchor_lon: f64,
+}
+
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct Config {
+    #[serde(default)]
+    pub offline_preview: Option<OfflinePreviewSelection>,
+    #[serde(default = "super::map_search::default_endpoint")]
+    pub map_search_endpoint: String,
+    #[serde(default)]
+    pub map_search_name: Option<super::map_boundary::SearchName>,
+    #[serde(default)]
+    pub map_boundary: Option<super::map_boundary::Selection>,
     #[serde(default)]
     pub school_campus: Option<super::campus::Selection>,
     #[serde(default)]
@@ -110,7 +127,11 @@ fn default_update_check() -> String {
 impl Default for Config {
     fn default() -> Self {
         Self {
+            offline_preview: None,
             school_campus: None,
+            map_boundary: None,
+            map_search_name: None,
+            map_search_endpoint: super::map_search::default_endpoint(),
             username: String::new(),
             password: String::new(),
             remember: false,
@@ -240,7 +261,14 @@ pub fn clear_session() {
 }
 
 pub fn load_config() -> Config {
-    read_json("config.json").unwrap_or_default()
+    let mut config: Config = read_json("config.json").unwrap_or_default();
+    // Portable presets resolve bundled maps beside the executable, regardless of launcher CWD.
+    let path = std::path::Path::new(&config.osm_path);
+    if !config.osm_path.is_empty() && path.is_relative() {
+        let bundled = exe_dir().join(path);
+        if bundled.is_file() { config.osm_path = bundled.display().to_string(); }
+    }
+    config
 }
 
 pub fn save_config(c: &Config) -> Result<(), String> {
