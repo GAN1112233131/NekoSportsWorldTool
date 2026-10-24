@@ -1,5 +1,7 @@
 # 校园地图合并版（2026-10-23）
 
+历史验收记录，2026-10-24 补注：代码基线 ef47c42，公开仓库后续提交 6ab91f47（本次 BUG 清单修复基线 b1650d6）。该批版本已发布至 [2026-10-23 Release](https://github.com/GAN1112233131/NekoSportsWorldTool/releases/tag/windows-campus-map-2026-10-23)；旧包内报告的“未发布”仅描述打包当时状态。本页下述测试计数与 SHA256 属于旧版，不是本次新构建。
+
 版本号保持 0.3.0。仅发布 Windows ZIP；退出旧程序后替换 EXE，保留现有配置、登录文件和 submission_receipts/。
 
 ## 修改

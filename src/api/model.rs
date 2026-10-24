@@ -102,7 +102,7 @@ pub struct Config {
 }
 
 fn default_route_mode() -> String {
-    "legacy".into()
+    "road".into()
 }
 
 fn default_f32() -> f32 {
@@ -532,5 +532,27 @@ mod points_cache_tests {
             crate::location::Coordinate::new(38.9, 121.5, 0.0).unwrap(),
             0.0001
         ));
+    }
+}
+
+#[cfg(test)]
+mod fresh_install_tests {
+    use super::*;
+    #[test]
+    fn fresh_config_uses_road_but_explicit_legacy_is_preserved() {
+        assert_eq!(Config::default().route_mode,"road");
+        assert_eq!(serde_json::from_str::<Config>("{}").unwrap().route_mode,"road");
+        assert_eq!(serde_json::from_str::<Config>(r#"{"route_mode":"legacy"}"#).unwrap().route_mode,"legacy");
+    }
+    #[test]
+    fn packaged_example_is_valid_and_contains_no_account_or_identity() {
+        let raw=include_str!("../../config.example.json");
+        let c:Config=serde_json::from_str(raw).unwrap();
+        assert_eq!(c.route_mode,"road"); assert_eq!(c.update_check,"off");
+        assert!(c.username.is_empty() && c.password.is_empty() && !c.remember);
+        assert!(c.dist_min > 0. && c.dist_max >= c.dist_min);
+        assert!(c.pace_min > 0. && c.pace_max >= c.pace_min);
+        let v:serde_json::Value=serde_json::from_str(raw).unwrap();
+        for key in ["token","uid","device_id"] { assert!(v.get(key).is_none()); }
     }
 }

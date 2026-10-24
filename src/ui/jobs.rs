@@ -506,8 +506,11 @@ impl App {
             if let Some(host) = detail_test_host {
                 client.set_test_host(host);
             }
-            match crate::api::records::fetch_detail(&mut client, rrid) {
-                Ok(d) => {
+            match crate::api::records::fetch_one_record(&mut client, rrid) {
+                Ok(mut d) => {
+                    // Keep unknown reason fields and numeric/string types intact.
+                    // The validated request ID is used for UI routing.
+                    d["rrid"] = serde_json::json!(rrid);
                     let payload = serde_json::to_string(&d).unwrap_or_default();
                     tx.send(format!("{RUN_DETAIL}{payload}")).ok();
                 }
@@ -612,13 +615,7 @@ impl App {
             match crate::api::semester::query(&mut client, &mut log) {
                 Ok(r) => {
                     if let Some(s) = r.summary {
-                        log(&format!(
-                            "√ [semester] {} 有效 {}/{} 次，有效里程 {:.2} km",
-                            s.sname,
-                            s.semester_valid_count,
-                            s.semester_count,
-                            s.semester_valid_dis / 1000.0
-                        ));
+                        log(&format!("√ [semester] {}", s.display()));
                         let payload = serde_json::to_string(&s).unwrap_or_default();
                         tx.send(format!("{SEMESTER}{payload}")).ok();
                     } else {

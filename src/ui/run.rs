@@ -362,7 +362,8 @@ impl App {
                     crate::platform::InputKind::Text,
                     120.0,
                 );
-                ui.label("留空自动；可填 17.2 或 11.6-22.8");
+                ui.label("留空使用模拟海拔；可填 17.2 或 11.6-22.8");
+                ui.label("填单值将导致零爬升；自动海拔不是地图地形测量。");
             });
             mobile::row(ui, |ui| {
                 ui.label("开始时间：");
@@ -417,9 +418,13 @@ impl App {
                 ui.selectable_value(&mut page.route_mode, RouteMode::Legacy, "经典打卡点环");
                 ui.selectable_value(&mut page.route_mode, RouteMode::Road, "真实道路路由");
                 if page.route_mode == RouteMode::Road && self.network.is_none() {
-                    ui.colored_label(theme::warn(), "（正在按学校获取，可到路网页查看）");
+                    ui.colored_label(theme::warn(), "请先设置定位锚点，再到路网页自动获取学校路网");
                 }
             });
+        }
+
+        if self.run_page.route_mode == RouteMode::Legacy {
+            ui.colored_label(theme::warn(), "经典模式不含道路约束与道路模式的速度联动；不能保证避开建筑或全程校内。");
         }
 
         // 切换到真实道路路由时按需拉取电子围栏与实时点位（经典模式不触发这些端点）。

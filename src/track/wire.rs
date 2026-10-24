@@ -399,6 +399,26 @@ mod regression_tests {
         );
     }
     #[test]
+    fn lap_pace_extrema_are_ordered_in_seconds_per_kilometre() {
+        let mut track = linear_track(3000.0, 1164, 3600);
+        let first = track.locations[0].clone();
+        track.locations = [(0., 0, 0), (1000., 410, 1200),
+            (2000., 799, 2400), (3000., 1164, 3600)].into_iter().map(|(d,t,s)| {
+                let mut p=first.clone(); p.totalDis=d; p.totalTime=t; p.steps=s; p
+            }).collect();
+        crate::track::stats::rebuild(&mut track);
+        let laps=build_laps(&track,0);
+        let paces: Vec<_>=laps.iter().map(|l| l["avgPace"].as_f64().unwrap()).collect();
+        assert_eq!(paces, vec![410.,389.,365.]);
+        let fastest=paces.iter().copied().fold(f64::INFINITY,f64::min);
+        let slowest=paces.iter().copied().fold(0.,f64::max);
+        let average=track.totalTime as f64/(track.totalDistance/1000.);
+        assert_eq!(fastest,365.);
+        assert!(fastest <= average && average <= slowest);
+        // There are no maxPace/minPace fields in the observed lap contract.
+        assert!(laps.iter().all(|l| l.get("maxPace").is_none() && l.get("minPace").is_none()));
+    }
+    #[test]
     fn encoded_obs_lap_pace_uses_seconds_not_decimal_minutes() {
         for (distance, seconds, pace) in [
             (1000.0, 408, 408.0),

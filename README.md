@@ -1,14 +1,14 @@
-[⬇ 下载最新版 Windows x64（ZIP，2026-10-23 校园地图合并版）](https://github.com/GAN1112233131/NekoSportsWorldTool/releases/download/windows-campus-map-2026-10-23/NekoSportsWorldTool-Windows-x64-campus-map.zip)
+[⬇ 下载最新版 Windows x64（ZIP，2026-10-24 原始详情与 BUG 修复合并版）](https://github.com/GAN1112233131/NekoSportsWorldTool/releases/download/windows-record-bugfix-2026-10-24/NekoSportsWorldTool-Windows-x64-record-bugfix.zip)
 
-版本 **0.3.0**，含 GUI 与 CLI。解压运行 `NekoSportsWorldTool.exe`。更新时先关闭旧程序，只替换 EXE，保留原配置、登录信息、地图缓存和 `submission_receipts/`。压缩包不附带账号配置，不覆盖原有设置。
+版本 **0.3.0+提交标识**，含 GUI 与 CLI。解压运行 `NekoSportsWorldTool.exe`，使用 `--version` 核对构建。升级时保留原配置、登录状态、地图缓存和 `submission_receipts/`；`config.example.json` 仅为无账号示例，勿覆盖原配置。
 
-本版合入学校点位兼容、校园地图边界查询、鼎湖校区预览与重启恢复修复。道路主服务失败后自动尝试 OSM 官方备用地图接口，保留 HTTPS 证书校验；校园边界需核对确认。无有效边界时显示“校园范围未校验”，不能保证路线始终在校内。继承配速单位修正和重复提交保护。
+本版合入学期统计、违规计数、十秒步数窗口和默认道路模式修复；详情显示 `speed`、`statusInfo`、`reasonList` 原值，并新增 `record --rrid <id>` 原始 JSON 命令。道路备用服务、校园边界确认及离线恢复功能继续保留。
 
-合并后通过 GUI 工作区 237 项、无 GUI 工作区 160 项、Windows 原生 217 项测试，另通过离线预览重启恢复验收。未测试真实成绩提交、OBS 上传或 Android 构建，详细验证范围见报告。
+P0-2、P1-10 待官方抓包验证，未猜测协议单位；App 最快配速来源与真实地形海拔仍未完全解决。无有效校园边界时无法保证全程校内。测试不包含真实成绩提交或 OBS 上传，Android 本批未验证。
 
-[更新说明与测试报告](docs/campus-map-integration-2026-10-23.md) · [SHA-256](downloads/SHA256SUMS-campus-map.txt) · [Release](https://github.com/GAN1112233131/NekoSportsWorldTool/releases/tag/windows-campus-map-2026-10-23)
+[更新与验收说明](docs/record-bugfix-release-2026-10-24.md) · [Release 与校验值](https://github.com/GAN1112233131/NekoSportsWorldTool/releases/tag/windows-record-bugfix-2026-10-24)
 
-仅提供 ZIP 下载；仓库内旧下载包为历史版本。
+仅发布 ZIP；包内白名单为 EXE、config.example.json、SHA256SUMS.txt、更新说明.txt。
 
 ---
 
@@ -88,3 +88,8 @@ cargo build --release --no-default-features  # 仅 CLI
 ## 许可证
 
 [CC BY-NC 4.0](LICENSE) © YanamiNeko（禁止商用）
+
+## 测试构建与设备说明
+记录详情页增加 `speed`、`statusInfo` 和 `reasonList` JSON。脚本可执行 `NekoSportsWorldTool.exe record --rrid 123 > record.json`：stdout 仅输出详情原始 JSON，诊断写到 stderr，失败返回非零退出码；保留原有 `record-info` 命令。该查询需要有效登录状态，或已保存的登录配置。
+成绩提交固定模拟安卓；设备信息页的平台设置只影响其他接口，不能统一所有请求身份。当前自动海拔是模拟数据，不是定位锚点的真实地形；手动填写单个海拔值会使爬升为零。
+使用 `--version` 或界面版本查看构建标识；带 dirty 的标识表示来自未提交工作区，精确识别请使用发行包 SHA256SUMS.txt。

@@ -310,10 +310,7 @@ impl App {
                 ui.label(format!("日志 {} 行", self.log.len()));
                 ui.separator();
                 if let Some(s) = &self.data_page.semester {
-                    ui.label(format!(
-                        "学期 {}：有效 {}/{} 次",
-                        s.sname, s.semester_valid_count, s.semester_count
-                    ));
+                    ui.label(s.display());
                 }
                 if let Some(c) = &self.data_page.cheat {
                     ctx.request_repaint_after(std::time::Duration::from_secs(1));
@@ -343,7 +340,7 @@ impl App {
                         self.check_update(true);
                     }
                     ui.label(
-                        egui::RichText::new(format!("v{}", crate::platform::version_name()))
+                        egui::RichText::new(format!("v{}", crate::platform::build_version()))
                             .small()
                             .color(theme::text_dim()),
                     );
