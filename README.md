@@ -1,17 +1,3 @@
-[⬇ 下载最新版 Windows x64（ZIP，2026-10-24 原始详情与 BUG 修复合并版）](https://github.com/GAN1112233131/NekoSportsWorldTool/releases/download/windows-record-bugfix-2026-10-24/NekoSportsWorldTool-Windows-x64-record-bugfix.zip)
-
-版本 **0.3.0+提交标识**，含 GUI 与 CLI。解压运行 `NekoSportsWorldTool.exe`，使用 `--version` 核对构建。升级时保留原配置、登录状态、地图缓存和 `submission_receipts/`；`config.example.json` 仅为无账号示例，勿覆盖原配置。
-
-本版合入学期统计、违规计数、十秒步数窗口和默认道路模式修复；详情显示 `speed`、`statusInfo`、`reasonList` 原值，并新增 `record --rrid <id>` 原始 JSON 命令。道路备用服务、校园边界确认及离线恢复功能继续保留。
-
-P0-2、P1-10 待官方抓包验证，未猜测协议单位；App 最快配速来源与真实地形海拔仍未完全解决。无有效校园边界时无法保证全程校内。测试不包含真实成绩提交或 OBS 上传，Android 本批未验证。
-
-[更新与验收说明](docs/record-bugfix-release-2026-10-24.md) · [Release 与校验值](https://github.com/GAN1112233131/NekoSportsWorldTool/releases/tag/windows-record-bugfix-2026-10-24)
-
-仅发布 ZIP；包内白名单为 EXE、config.example.json、SHA256SUMS.txt、更新说明.txt。
-
----
-
 <h1 style="font-size: 48px;">别倒卖了😭</h1>
 
 # NekoSportsWorldTool
@@ -71,8 +57,8 @@ NekoSportsWorldTool help                                 # 全部命令
 - **10121 设备风险**：设备身份是持久化的，删除 `identity.json` 等于换了新设备，不要频繁删
 - **10603 点位限流**：点位接口 5 分钟限 3 次，程序内置 300s 缓存，正常使用不会触发
 - **榜单为空**：当天还没有人产生有效里程，查询会自动回退最近 3 天
-- **检查更新失败**：本 Windows 修复版请从本文顶部链接手动下载；其他平台可查看[上游 Release](https://github.com/YanamiNeko/NekoSportsWorldTool/releases)。
-- **手动更新方式**：退出旧程序，解压顶部 Windows 压缩包，将 `NekoSportsWorldTool-Windows-x64-road-loop.exe` 放入原工具目录并运行这个新文件；请保留 `config.json`、`identity.json`、`points_cache.json` 等配置文件，不要删除或修改。
+- **检查更新失败**：更新仅直连 GitHub，网络不通时到 [Release](https://github.com/YanamiNeko/NekoSportsWorldTool/releases) 手动下载
+- **手动更新方式**：Windows 下载并解压新版本后退出旧程序，用新 EXE 替换旧文件；请保留 `config.json`、`identity.json`、`points_cache.json` 等配置文件，不要删除或修改。
 - **人机验证失败**：自动重试 3 轮，仍失败大概率是网络波动，稍后再试
 - **杀软误报**：未签名编译产物可能被误报，自行判断后加白
 
